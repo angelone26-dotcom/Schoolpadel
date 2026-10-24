@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SchoolPadel — Aprende golpe a golpe</title>
+<meta name="description" content="Encuentra tutoriales de pádel organizados por golpes. Aprende, compara y mejora tu juego.">
+<style>
+:root {
+  --bg: #0b1110;
+  --panel: #131d19;
+  --panel2: #1a2822;
+  --green: #c5ff51;
+  --text: #f4f7f2;
+  --muted: #a3b0a7;
+  --line: #2a3931;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+header {
+  height: 76px;
+  padding: 0 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+.logo { font-size: 23px; font-weight: 900; letter-spacing: -1px; }
+.logo span { color: var(--green); }
+.header-note { color: var(--muted); font-size: 13px; }
+.hero {
+  padding: 76px 7% 55px;
+  background:
+    radial-gradient(ellipse at 80% 25%, #243b25 0%, transparent 42%),
+    linear-gradient(140deg, #101a15, #0b1110 70%);
+}
+.eyebrow {
+  color: var(--green);
+  font-size: 12px;
+  letter-spacing: 2px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+h1 {
+  font-size: clamp(42px, 7vw, 76px);
+  letter-spacing: -3px;
+  line-height: 1.02;
+  max-width: 760px;
+  margin: 20px 0;
+}
+h1 span { color: var(--green); }
+.hero p {
+  color: var(--muted);
+  max-width: 560px;
+  font-size: 17px;
+  line-height: 1.7;
+}
+.search {
+  display: flex;
+  gap: 10px;
+  max-width: 570px;
+  margin-top: 28px;
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  padding: 15px 17px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  background: #101814;
+  outline: none;
+}
+.search input:focus { border-color: var(--green); }
+.primary {
+  background: var(--green);
+  color: #11180b;
+  font-weight: 800;
+  border: 0;
+  padding: 14px 19px;
+  border-radius: 10px;
+}
+main { padding: 48px 7% 80px; }
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+h2 { font-size: 27px; letter-spacing: -1px; margin: 0 0 8px; }
+.sub { color: var(--muted); font-size: 14px; }
+.categories {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+}
+.category {
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--text);
+  padding: 19px;
+  min-height: 145px;
+  transition: .18s ease;
+}
+.category:hover, .category.active {
+  border-color: var(--green);
+  background: var(--panel2);
+  transform: translateY(-2px);
+}
+.category .emoji { font-size: 25px; margin-bottom: 17px; }
+.category strong { display: block; font-size: 15px; margin-bottom: 7px; }
+.category small { color: var(--muted); font-size: 12px; }
+.results { margin-top: 58px; }
+.result-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.pill {
+  display: inline-block;
+  background: #253324;
+  color: var(--green);
+  border-radius: 100px;
+  padding: 7px 11px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+}
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 17px;
+}
+.video-card {
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.thumb {
+  display: block;
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #1b2a21;
+  overflow: hidden;
+}
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.play {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--green);
+  color: #11180b;
+  width: 45px; height: 45px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 18px;
+}
+.video-info { padding: 17px; }
+.video-info h3 { font-size: 16px; line-height: 1.45; margin: 10px 0; }
+.video-info p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.video-link {
+  display: inline-block;
+  margin-top: 6px;
+  color: var(--green);
+  font-weight: 800;
+  font-size: 13px;
+}
+.empty {
+  border: 1px dashed #405044;
+  border-radius: 14px;
+  padding: 30px;
+  background: #101713;
+}
+.empty p { color: var(--muted); line-height: 1.7; }
+.empty .primary { display: inline-block; margin-top: 8px; }
+.community {
+  margin-top: 65px;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(130deg, #19271e, #101713);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 22px;
+}
+.community p { color: var(--muted); line-height: 1.7; max-width: 600px; }
+footer {
+  border-top: 1px solid var(--line);
+  padding: 27px 7%;
+  color: var(--muted);
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+@media (max-width: 850px) {
+  .categories { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  header { padding: 0 5%; height: 65px; }
+  .header-note { display: none; }
+  .hero { padding: 55px 5% 42px; }
+  h1 { letter-spacing: -2px; }
+  main { padding: 38px 5% 60px; }
+  .search { flex-direction: column; }
+  .search .primary { width: 100%; }
+  .categories { gap: 9px; }
+  .category { padding: 14px; min-height: 130px; }
+  .video-grid { grid-template-columns: 1fr; }
+  .community { padding: 23px; align-items: start; flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="#" aria-label="SchoolPadel inicio">School<span>Padel</span> 🎾</a>
+  <div class="header-note">Aprendé. Practicá. Mejorá.</div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Tu biblioteca de pádel</div>
+  <h1>Mejorá tu pádel.<br><span>Golpe a golpe.</span></h1>
+  <p>
+    Encontrá tutoriales organizados por golpe, descubrí distintas técnicas
+    y elegí qué querés mejorar en tu próximo entrenamiento.
+  </p>
+  <form class="search" id="searchForm">
+    <input id="searchInput" type="search"
+      placeholder="Ej.: bandeja, salida de pared, revés..."
+      aria-label="Buscar tutoriales de pádel">
+    <button class="primary" type="submit">Buscar tutoriales ↗</button>
+  </form>
+</section>
+
+<main>
+  <section>
+    <div class="section-heading">
+      <div>
+        <h2>¿Qué querés mejorar?</h2>
+        <div class="sub">Elegí un golpe para explorar tutoriales.</div>
+      </div>
+    </div>
+    <div class="categories" id="categories"></div>
+  </section>
+
+  <section class="results" id="results">
+    <div class="result-top">
+      <div>
+        <div class="pill">Para empezar</div>
+        <h2 style="margin-top:12px" id="resultTitle">Tutoriales destacados</h2>
+        <div class="sub" id="resultSubtitle">Una selección inicial para aprender.</div>
+      </div>
+    </div>
+    <div id="videoResults"></div>
+  </section>
+
+  <section class="community">
+    <div>
+      <div class="eyebrow">La próxima etapa</div>
+      <h2 style="margin-top:12px">Aprender en comunidad.</h2>
+      <p>
+        Estamos preparando un espacio para puntuar tutoriales con estrellas,
+        compartir qué aprendiste y descubrir los videos mejor valorados por
+        otros jugadores.
+      </p>
+    </div>
+    <span class="pill">Próximamente</span>
+  </section>
+</main>
+
+<footer>
+  <div>© 2026 SchoolPadel</div>
+  <div>Los videos enlazan a sus creadores originales en YouTube.</div>
+</footer>
+
+<script>
+const categories = [
+  { name: "Derecha", emoji: "🎾", group: "Golpes de fondo" },
+  { name: "Revés", emoji: "↩️", group: "Golpes de fondo" },
+  { name: "Volea de derecha", emoji: "⚡", group: "Juego en la red" },
+  { name: "Volea de revés", emoji: "🛡️", group: "Juego en la red" },
+  { name: "Bandeja", emoji: "☄️", group: "Golpes aéreos" },
+  { name: "Víbora", emoji: "🐍", group: "Golpes aéreos" },
+  { name: "Remate", emoji: "💥", group: "Golpes aéreos" },
+  { name: "Globo", emoji: "🎈", group: "Defensa" },
+  { name: "Salida de pared", emoji: "🧱", group: "Defensa" },
+  { name: "Doble pared", emoji: "🔄", group: "Defensa" },
+  { name: "Saque y resto", emoji: "🎯", group: "Otros golpes" },
+  { name: "Desplazamientos", emoji: "👟", group: "Táctica y movimiento" },
+  { name: "Táctica", emoji: "🧠", group: "Táctica y movimiento" }
+];
+
+// Videos incorporados con enlaces identificados.
+// El catálogo se ampliará con más videos verificados.
+const videos = [
+  {
+    category: "Bandeja",
+    title: "Haz esto y fallarás menos con la bandeja y la víbora",
+    channel: "Mejora tu pádel",
+    id: "WD_P3OaNMAw",
+    description: "Consejos tácticos para elegir dónde jugar la pelota.",
+    url: "https://www.youtube.com/watch?v=WD_P3OaNMAw"
+  },
+  {
+    category: "Víbora",
+    title: "Haz esto y fallarás menos con la bandeja y la víbora",
+    channel: "Mejora tu pádel",
+    id: "WD_P3OaNMAw",
+    description: "Consejos tácticos para elegir dónde jugar la pelota.",
+    url: "https://www.youtube.com/watch?v=WD_P3OaNMAw"
+  }
+];
+
+const categoriesEl = document.getElementById("categories");
+const videoResults = document.getElementById("videoResults");
+const resultTitle = document.getElementById("resultTitle");
+const resultSubtitle = document.getElementById("resultSubtitle");
+let activeCategory = "";
+
+function renderCategories() {
+  categoriesEl.innerHTML = "";
+  categories.forEach(cat => {
+    const button = document.createElement("button");
+    button.className = "category" +
+      (activeCategory === cat.name ? " active" : "");
+    button.innerHTML = `
+      <div class="emoji">${cat.emoji}</div>
+      <strong>${cat.name}</strong>
+      <small>${cat.group}</small>`;
+    button.addEventListener("click", () => {
+      activeCategory = cat.name;
+      renderCategories();
+      showCategory(cat.name);
+    });
+    categoriesEl.appendChild(button);
+  });
+}
+
+function createVideoCard(video) {
+  const card = document.createElement("article");
+  card.className = "video-card";
+  const link = document.createElement("a");
+  link.className = "thumb";
+  link.href = video.url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.setAttribute("aria-label", "Ver video en YouTube");
+  const img = document.createElement("img");
+  img.src = `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`;
+  img.alt = video.title;
+  img.loading = "lazy";
+  const play = document.createElement("span");
+  play.className = "play";
+  play.textContent = "▶";
+  link.append(img, play);
+
+  const info = document.createElement("div");
+  info.className = "video-info";
+  const tag = document.createElement("span");
+  tag.className = "pill";
+  tag.textContent = video.category;
+  const title = document.createElement("h3");
+  title.textContent = video.title;
+  const channel = document.createElement("p");
+  channel.textContent = video.channel;
+  const desc = document.createElement("p");
+  desc.textContent = video.description;
+  const more = document.createElement("a");
+  more.className = "video-link";
+  more.href = video.url;
+  more.target = "_blank";
+  more.rel = "noopener noreferrer";
+  more.textContent = "Ver en YouTube ↗";
+  info.append(tag, title, channel, desc, more);
+  card.append(link, info);
+  return card;
+}
+
+function showCategory(name) {
+  resultTitle.textContent = "Tutoriales de " + name;
+  resultSubtitle.textContent = "Videos seleccionados y más resultados para explorar.";
+  videoResults.innerHTML = "";
+
+  const matches = videos.filter(v => v.category === name);
+  if (matches.length) {
+    const grid = document.createElement("div");
+    grid.className = "video-grid";
+    matches.forEach(v => grid.appendChild(createVideoCard(v)));
+    videoResults.appendChild(grid);
+  }
+
+  const empty = document.createElement("div");
+  empty.className = "empty";
+  const heading = document.createElement("h3");
+  heading.textContent = matches.length
+    ? "¿Querés encontrar más opciones?"
+    : "Exploremos este golpe";
+  const description = document.createElement("p");
+  description.textContent = matches.length
+    ? "Esta es una selección inicial. Podés abrir YouTube para descubrir más tutoriales de este golpe."
+    : "Todavía estamos armando la selección curada de esta categoría. Mientras tanto, podés consultar tutoriales directamente en YouTube.";
+  const button = document.createElement("a");
+  button.className = "primary";
+  button.style.display = "inline-block";
+  button.href = youtubeSearch(name);
+  button.target = "_blank";
+  button.rel = "noopener noreferrer";
+  button.textContent = "Buscar " + name + " en YouTube ↗";
+  empty.append(heading, description, button);
+  videoResults.appendChild(empty);
+}
+
+function youtubeSearch(query) {
+  return "https://www.youtube.com/results?search_query=" +
+    encodeURIComponent("tutorial pádel " + query);
+}
+
+document.getElementById("searchForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const query = document.getElementById("searchInput").value.trim();
+  if (!query) return;
+  activeCategory = "";
+  renderCategories();
+  resultTitle.textContent = 'Buscar: "' + query + '"';
+  resultSubtitle.textContent = "Abrí YouTube para consultar los resultados.";
+  videoResults.innerHTML = "";
+  const box = document.createElement("div");
+  box.className = "empty";
+  const heading = document.createElement("h3");
+  heading.textContent = "Resultados de búsqueda";
+  const paragraph = document.createElement("p");
+  paragraph.textContent = "Buscá tutoriales relacionados con tu consulta en YouTube.";
+  const link = document.createElement("a");
+  link.className = "primary";
+  link.style.display = "inline-block";
+  link.href = youtubeSearch(query);
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = "Ver resultados ↗";
+  box.append(heading, paragraph, link);
+  videoResults.appendChild(box);
+});
+
+renderCategories();
+showCategory("Bandeja");
+</script>
+</body>
+</html>
