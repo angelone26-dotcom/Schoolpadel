@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10251d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SchoolPadel | Aprende golpe a golpe">
+<meta property="og:description" content="Tutoriales de pádel organizados por golpe y por problema. Mirá los videos sin salir de la web.">
+<meta property="og:locale" content="es_UY">
 <title>SchoolPadel | Aprende golpe a golpe</title>
 <style>
 :root {
@@ -52,6 +56,25 @@ select { max-width:100%; cursor:pointer }
 .cat:hover,.cat.active { border-color:var(--green); background:#203b2a }
 .cat strong { display:block }
 .cat small { color:var(--muted) }
+.problems { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px }
+.prob {
+  display:flex; align-items:center; gap:11px; padding:13px; text-align:left; color:var(--text);
+  font:inherit; background:var(--panel); border:1px solid var(--line); border-radius:13px; cursor:pointer;
+}
+.prob:hover,.prob.active { border-color:var(--green); background:#203b2a }
+.prob .emoji { font-size:1.4rem; flex:none }
+.more {
+  grid-column:1/-1; justify-self:center; background:#0c1912; color:var(--green);
+  border:1px solid var(--green); border-radius:12px; padding:12px 18px; font:inherit; font-weight:800; cursor:pointer;
+}
+.more:hover { background:#203b2a }
+.share-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+.btn {
+  background:#0c1912; color:var(--text); border:1px solid var(--line);
+  border-radius:10px; padding:9px 13px; font:inherit; font-size:.9rem; cursor:pointer;
+}
+.btn:hover { border-color:var(--green); color:var(--green) }
+button.alt { background:none; border:0; padding:0; font:inherit; font-size:.8rem; cursor:pointer }
 .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:15px }
 .card { border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--panel); display:flex; flex-direction:column }
 .thumb { display:block; width:100%; padding:0; border:0; cursor:pointer; position:relative; aspect-ratio:16/9; background:#07100b }
@@ -116,7 +139,7 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
 <body>
 <header class="wrap">
   <a class="logo" href="#">School<span>Padel</span> 🎾</a>
-  <nav><a href="#golpes">Golpes</a><a href="#videos">Videos</a></nav>
+  <nav><a href="#problemas">Problemas</a><a href="#golpes">Golpes</a><a href="#videos">Videos</a></nav>
 </header>
 
 <main class="wrap">
@@ -129,6 +152,14 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
       <span class="pill" id="pill-videos"></span>
       <span class="pill">Mirá los videos sin salir de la web</span>
     </div>
+  </section>
+
+  <section id="problemas">
+    <div class="heading">
+      <h2>¿Qué te pasa en la cancha?</h2>
+      <p>Elegí tu problema y te mostramos los videos para resolverlo.</p>
+    </div>
+    <div class="problems" id="problems"></div>
   </section>
 
   <section id="golpes">
@@ -174,7 +205,11 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
         referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </div>
     <div class="modal-bottom">
-      <a class="alt" id="modal-yt" href="#" target="_blank" rel="noopener">¿No se reproduce? Abrilo en YouTube ↗</a>
+      <div class="share-row">
+        <button type="button" class="btn" id="share">Compartir</button>
+        <button type="button" class="btn" id="copy">Copiar link</button>
+        <a class="alt" id="modal-yt" href="#" target="_blank" rel="noopener">¿No se reproduce? Abrilo en YouTube ↗</a>
+      </div>
       <div class="nav-btns">
         <button type="button" id="prev">← Anterior</button>
         <button type="button" id="next">Siguiente →</button>
@@ -353,6 +388,20 @@ const videos = categories.flatMap(category =>
 );
 
 let selected = "Todas";
+let selectedProblem = null;
+let expanded = false;
+const PROBLEMS = [
+  {icon:"🎯", text:"Se me va larga la bandeja", cats:["Bandeja","Víbora"]},
+  {icon:"↩️", text:"Mi revés sale flojo o no llego", cats:["Revés","Desplazamientos"]},
+  {icon:"🌈", text:"Me tiran globos y no sé qué hacer", cats:["Globo","Remate","Bandeja"]},
+  {icon:"🧱", text:"No sé jugar las pelotas que rebotan en la pared", cats:["Salida de pared","Doble pared","Bajada de pared"]},
+  {icon:"🏓", text:"Me cuesta el saque", cats:["Saque"]},
+  {icon:"🛡️", text:"No sé devolver el saque", cats:["Resto"]},
+  {icon:"😓", text:"Me atacan y no sé defender", cats:["Chiquita","Globo","Bajada de pared"]},
+  {icon:"🥅", text:"Cuando llego a la red no defino", cats:["Volea de derecha","Volea de revés","Dejada"]},
+  {icon:"📍", text:"No sé dónde pararme", cats:["Táctica"]},
+  {icon:"🏃", text:"Llego tarde a las pelotas", cats:["Desplazamientos"]}
+];
 const categoryBox = document.getElementById("categories");
 const cardsBox = document.getElementById("cards");
 const search = document.getElementById("search");
@@ -378,19 +427,83 @@ function renderCategories() {
     const count = name === "Todas" ? videos.length : catalog[name].length;
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "cat" + (selected === name ? " active" : "");
+    button.className = "cat" + (selected === name && selectedProblem === null ? " active" : "");
     button.innerHTML = `<strong>${name}</strong><small>${count} video${count===1?"":"s"}</small>`;
     button.addEventListener("click", () => {
       selected = name;
+      selectedProblem = null;
+      expanded = false;
+      document.getElementById("subtitle").textContent = "Elegí un tutorial para verlo acá mismo.";
       document.getElementById("title").textContent =
         name === "Todas" ? "Todos los videos" : name;
       renderCategories();
+      renderProblems();
       renderCards();
       document.getElementById("videos").scrollIntoView({behavior:"smooth"});
     });
     categoryBox.appendChild(button);
   });
 }
+
+const problemBox = document.getElementById("problems");
+const shareBtn = document.getElementById("share");
+const copyBtn = document.getElementById("copy");
+
+function renderProblems() {
+  problemBox.innerHTML = "";
+  PROBLEMS.forEach((p,i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "prob" + (selectedProblem === i ? " active" : "");
+    const e = document.createElement("span");
+    e.className = "emoji";
+    e.textContent = p.icon;
+    const t = document.createElement("span");
+    t.textContent = p.text;
+    b.append(e,t);
+    b.addEventListener("click",() => {
+      selectedProblem = i;
+      selected = "Todas";
+      expanded = false;
+      document.getElementById("title").textContent = p.text;
+      document.getElementById("subtitle").textContent = "Te recomendamos estos videos de: " + p.cats.join(", ") + ".";
+      renderCategories();
+      renderProblems();
+      renderCards();
+      document.getElementById("videos").scrollIntoView({behavior:"smooth"});
+    });
+    problemBox.appendChild(b);
+  });
+}
+
+function shareUrl(v) { return location.origin + location.pathname + "#v=" + v.id; }
+
+function shareVideo(v) {
+  const url = shareUrl(v);
+  const text = "Mirá este video de pádel en SchoolPadel: " + v.title;
+  if (navigator.share) {
+    navigator.share({title:"SchoolPadel", text, url}).catch(() => {});
+    return;
+  }
+  window.open("https://wa.me/?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
+}
+
+function copyLink(v,btn) {
+  const url = shareUrl(v);
+  const done = () => {
+    const old = btn.textContent;
+    btn.textContent = "¡Link copiado!";
+    setTimeout(() => { btn.textContent = old; }, 1600);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(done).catch(() => prompt("Copiá el link:",url));
+  } else {
+    prompt("Copiá el link:",url);
+  }
+}
+
+shareBtn.addEventListener("click",() => { if (currentList[currentIndex]) shareVideo(currentList[currentIndex]); });
+copyBtn.addEventListener("click",() => { if (currentList[currentIndex]) copyLink(currentList[currentIndex],copyBtn); });
 
 function openVideo(list,index) {
   currentList = list;
@@ -402,6 +515,7 @@ function openVideo(list,index) {
   modalTitle.textContent = v.title;
   modalSub.textContent = v.channel ? v.category + " · " + v.channel : v.category;
   modalYT.href = v.url;
+  try { history.replaceState(null,"","#v=" + v.id); } catch (e) {}
   prevBtn.disabled = index <= 0;
   nextBtn.disabled = index >= list.length - 1;
   if (modal.hidden) {
@@ -416,6 +530,7 @@ function closeVideo() {
   frame.src = "about:blank";
   modal.hidden = true;
   document.body.style.overflow = "";
+  try { history.replaceState(null,"",location.pathname + location.search); } catch (e) {}
   if (lastFocus && lastFocus.focus) lastFocus.focus();
 }
 
@@ -432,12 +547,23 @@ document.addEventListener("keydown",e => {
 
 function renderCards() {
   const query = search.value.trim().toLocaleLowerCase("es");
+  const problem = selectedProblem === null ? null : PROBLEMS[selectedProblem];
   let list = videos.filter(v =>
-    (selected === "Todas" || v.category === selected) &&
+    (problem ? problem.cats.includes(v.category) : (selected === "Todas" || v.category === selected)) &&
     (v.category + " " + v.title + " " + v.channel).toLocaleLowerCase("es").includes(query)
   );
+  let hidden = 0;
+  if (problem) {
+    list.sort((a,b) => problem.cats.indexOf(a.category) - problem.cats.indexOf(b.category) || a.number - b.number);
+    if (!expanded && !query) {
+      const per = {};
+      const visible = list.filter(v => (per[v.category] = (per[v.category] || 0) + 1) <= 3);
+      hidden = list.length - visible.length;
+      list = visible;
+    }
+  }
 
-  if (sort.value === "az") {
+  if (sort.value === "az" && !problem) {
     list.sort((a,b) => a.category.localeCompare(b.category,"es") || a.number-b.number);
   }
 
@@ -496,12 +622,26 @@ function renderCards() {
     alt.target = "_blank";
     alt.rel = "noopener";
     alt.textContent = "YouTube ↗";
-    actions.append(watch,alt);
+    const share = document.createElement("button");
+    share.type = "button";
+    share.className = "alt";
+    share.textContent = "Compartir";
+    share.addEventListener("click",() => shareVideo(v));
+    actions.append(watch,share,alt);
 
     body.append(tag,h3,p,actions);
     card.append(thumb,body);
     cardsBox.appendChild(card);
   });
+
+  if (hidden > 0) {
+    const more = document.createElement("button");
+    more.type = "button";
+    more.className = "more";
+    more.textContent = "Ver más videos de este problema (" + hidden + ")";
+    more.addEventListener("click",() => { expanded = true; renderCards(); });
+    cardsBox.appendChild(more);
+  }
 }
 
 /* Opcional: si existe videos.json (lo genera verificar_videos.py), usa los títulos y canales reales */
@@ -522,7 +662,24 @@ fetch("videos.json",{cache:"no-cache"})
 search.addEventListener("input",renderCards);
 sort.addEventListener("change",renderCards);
 renderCategories();
+renderProblems();
 renderCards();
+
+function openFromHash() {
+  const m = location.hash.match(/^#v=([A-Za-z0-9_-]{11})$/);
+  if (!m) return;
+  const v = videos.find(x => x.id === m[1]);
+  if (!v) return;
+  const list = videos.filter(x => x.category === v.category);
+  selected = v.category;
+  selectedProblem = null;
+  document.getElementById("title").textContent = v.category;
+  renderCategories();
+  renderProblems();
+  renderCards();
+  openVideo(list,list.indexOf(v));
+}
+openFromHash();
 </script>
 </body>
 </html>
