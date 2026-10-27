@@ -6,87 +6,369 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10251d">
 <title>SchoolPadel | Aprende golpe a golpe</title>
+
 <style>
 :root {
-  --bg:#0b1411; --panel:#14251c; --green:#a4e66b;
-  --text:#f3f7f3; --muted:#a8b8ad; --line:#2b4436;
+  --bg:#0b1411;
+  --panel:#14251c;
+  --green:#a4e66b;
+  --text:#f3f7f3;
+  --muted:#a8b8ad;
+  --line:#2b4436;
 }
-* { box-sizing:border-box }
-html { scroll-behavior:smooth }
+
+* {
+  box-sizing:border-box;
+}
+
+html {
+  scroll-behavior:smooth;
+}
+
 body {
-  margin:0; background:radial-gradient(ellipse at top,#193a29,var(--bg) 55%);
-  color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  margin:0;
+  background:radial-gradient(ellipse at top,#193a29,var(--bg) 55%);
+  color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
   line-height:1.5;
 }
-.wrap { width:min(1160px,92%); margin:auto }
+
+.wrap {
+  width:min(1160px,92%);
+  margin:auto;
+}
+
 header {
-  padding:20px 0; display:flex; justify-content:space-between;
-  align-items:center; gap:15px; border-bottom:1px solid var(--line);
+  padding:20px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  border-bottom:1px solid var(--line);
 }
-.logo { color:var(--text); font-size:1.4rem; font-weight:900; text-decoration:none }
-.logo span,h1 span { color:var(--green) }
-nav { display:flex; gap:18px }
-nav a { color:var(--muted); text-decoration:none }
-nav a:hover { color:var(--green) }
-.hero { padding:54px 0 30px }
-.eyebrow { color:var(--green); text-transform:uppercase; letter-spacing:2px; font-size:.8rem; font-weight:800 }
-h1 { font-size:clamp(2.5rem,7vw,5rem); letter-spacing:-3px; line-height:1; margin:14px 0 }
-.hero p { color:var(--muted); max-width:650px; font-size:1.05rem }
-.stats { display:flex; gap:9px; flex-wrap:wrap; margin-top:20px }
-.pill { border:1px solid var(--line); padding:7px 12px; border-radius:30px; color:var(--muted); font-size:.85rem }
-section { padding:25px 0 }
-.heading { margin-bottom:18px }
-h2 { font-size:1.65rem; margin:0; letter-spacing:-.5px }
-.heading p { color:var(--muted); margin:5px 0 }
-.search { display:flex; gap:10px; margin:20px 0; flex-wrap:wrap }
-input,select {
-  background:#0c1912; color:var(--text); border:1px solid var(--line);
-  border-radius:11px; padding:13px; font:inherit;
+
+.logo {
+  color:var(--text);
+  font-size:1.4rem;
+  font-weight:900;
+  text-decoration:none;
 }
-input { flex:1; min-width:210px }
-select { max-width:100%; cursor:pointer }
-.categories { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:10px }
+
+.logo span,
+h1 span {
+  color:var(--green);
+}
+
+nav {
+  display:flex;
+  gap:18px;
+}
+
+nav a {
+  color:var(--muted);
+  text-decoration:none;
+}
+
+nav a:hover {
+  color:var(--green);
+}
+
+.hero {
+  padding:54px 0 30px;
+}
+
+.eyebrow {
+  color:var(--green);
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-size:.8rem;
+  font-weight:800;
+}
+
+h1 {
+  font-size:clamp(2.5rem,7vw,5rem);
+  letter-spacing:-3px;
+  line-height:1;
+  margin:14px 0;
+}
+
+.hero p {
+  color:var(--muted);
+  max-width:650px;
+  font-size:1.05rem;
+}
+
+.stats {
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+.pill {
+  border:1px solid var(--line);
+  padding:7px 12px;
+  border-radius:30px;
+  color:var(--muted);
+  font-size:.85rem;
+}
+
+section {
+  padding:25px 0;
+}
+
+.heading {
+  margin-bottom:18px;
+}
+
+h2 {
+  font-size:1.65rem;
+  margin:0;
+  letter-spacing:-.5px;
+}
+
+.heading p {
+  color:var(--muted);
+  margin:5px 0;
+}
+
+.search {
+  display:flex;
+  gap:10px;
+  margin:20px 0;
+  flex-wrap:wrap;
+}
+
+input,
+select {
+  background:#0c1912;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:13px;
+  font:inherit;
+}
+
+input {
+  flex:1;
+  min-width:210px;
+}
+
+select {
+  max-width:100%;
+  cursor:pointer;
+}
+
+.categories {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:10px;
+}
+
 .cat {
-  padding:13px; text-align:left; color:var(--text); font:inherit;
-  background:var(--panel); border:1px solid var(--line); border-radius:13px; cursor:pointer;
+  padding:13px;
+  text-align:left;
+  color:var(--text);
+  font:inherit;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:13px;
+  cursor:pointer;
 }
-.cat:hover,.cat.active { border-color:var(--green); background:#203b2a }
-.cat strong { display:block }
-.cat small { color:var(--muted) }
-.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:15px }
-.card { border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--panel); display:flex; flex-direction:column }
-.thumb { display:block; aspect-ratio:16/9; background:#07100b }
-.thumb img { width:100%; height:100%; object-fit:cover; display:block }
-.card-body { padding:15px; display:flex; flex-direction:column; flex:1 }
-.tag { color:var(--green); font-size:.75rem; font-weight:800; text-transform:uppercase; letter-spacing:.4px }
-h3 { font-size:1.05rem; margin:8px 0 }
-.card p { color:var(--muted); font-size:.85rem; margin:0 0 15px }
-.watch { margin-top:auto; color:var(--green); text-decoration:none; font-weight:800; font-size:.9rem }
-.watch:hover { text-decoration:underline }
-.empty { padding:25px; border:1px dashed var(--line); border-radius:12px; color:var(--muted) }
-footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--muted); font-size:.85rem; margin-top:35px }
+
+.cat:hover,
+.cat.active {
+  border-color:var(--green);
+  background:#203b2a;
+}
+
+.cat strong {
+  display:block;
+}
+
+.cat small {
+  color:var(--muted);
+}
+
+.cards {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(245px,1fr));
+  gap:15px;
+}
+
+.card {
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+  background:var(--panel);
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+
+/* Miniatura que se transforma en reproductor */
+.thumb {
+  display:block;
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  padding:0;
+  border:0;
+  background:#07100b;
+  overflow:hidden;
+  cursor:pointer;
+  color:var(--text);
+}
+
+.thumb img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .2s ease;
+}
+
+.thumb:hover img {
+  transform:scale(1.035);
+}
+
+.thumb::after {
+  content:"▶";
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width:58px;
+  height:42px;
+  border-radius:12px;
+  background:rgba(0,0,0,.78);
+  color:white;
+  font-size:22px;
+  padding-left:4px;
+  pointer-events:none;
+}
+
+.thumb:hover::after {
+  background:#b91c1c;
+}
+
+/* Reproductor dentro de la tarjeta */
+.player {
+  width:100%;
+  aspect-ratio:16/9;
+  background:#000;
+  overflow:hidden;
+}
+
+.player iframe {
+  width:100%;
+  height:100%;
+  display:block;
+  border:0;
+}
+
+.card-body {
+  padding:15px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+.tag {
+  color:var(--green);
+  font-size:.75rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+
+h3 {
+  font-size:1.05rem;
+  margin:8px 0;
+}
+
+.card p {
+  color:var(--muted);
+  font-size:.85rem;
+  margin:0 0 15px;
+}
+
+.watch {
+  margin-top:auto;
+  color:var(--green);
+  text-decoration:none;
+  font-weight:800;
+  font-size:.9rem;
+}
+
+.watch:hover {
+  text-decoration:underline;
+}
+
+.empty {
+  padding:25px;
+  border:1px dashed var(--line);
+  border-radius:12px;
+  color:var(--muted);
+}
+
+footer {
+  border-top:1px solid var(--line);
+  padding:25px 0 35px;
+  color:var(--muted);
+  font-size:.85rem;
+  margin-top:35px;
+}
+
 @media(max-width:600px) {
-  header { align-items:flex-start; flex-direction:column }
-  .hero { padding-top:35px }
-  h1 { letter-spacing:-2px }
+  header {
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .hero {
+    padding-top:35px;
+  }
+
+  h1 {
+    letter-spacing:-2px;
+  }
+
+  .cards {
+    grid-template-columns:1fr;
+  }
 }
 </style>
 </head>
+
 <body>
+
 <header class="wrap">
   <a class="logo" href="#">School<span>Padel</span> 🎾</a>
-  <nav><a href="#golpes">Golpes</a><a href="#videos">Videos</a></nav>
+  <nav>
+    <a href="#golpes">Golpes</a>
+    <a href="#videos">Videos</a>
+  </nav>
 </header>
 
 <main class="wrap">
+
   <section class="hero">
     <div class="eyebrow">Tu biblioteca de pádel</div>
     <h1>Mejorá tu juego.<br><span>Golpe a golpe.</span></h1>
-    <p>Encontrá tutoriales de pádel organizados por golpe. Elegí lo que querés practicar, mirá el video y llevá lo aprendido a la cancha.</p>
+    <p>
+      Encontrá tutoriales de pádel organizados por golpe.
+      Elegí lo que querés practicar, mirá el video y llevá
+      lo aprendido a la cancha.
+    </p>
+
     <div class="stats">
       <span class="pill">17 categorías</span>
       <span class="pill">112 enlaces cargados</span>
-      <span class="pill">Acceso directo a YouTube</span>
+      <span class="pill">Videos dentro de la web</span>
     </div>
   </section>
 
@@ -101,110 +383,160 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
   <section id="videos">
     <div class="heading">
       <h2 id="title">Todos los videos</h2>
-      <p id="subtitle">Elegí un tutorial para abrirlo en YouTube.</p>
+      <p id="subtitle">
+        Tocá una miniatura para reproducir el video aquí mismo.
+      </p>
     </div>
+
     <div class="search">
-      <input id="search" type="search" placeholder="Buscar golpe o categoría..." aria-label="Buscar videos">
+      <input
+        id="search"
+        type="search"
+        placeholder="Buscar golpe o categoría..."
+        aria-label="Buscar videos"
+      >
+
       <select id="sort" aria-label="Ordenar videos">
         <option value="default">Orden original</option>
         <option value="az">Categoría A-Z</option>
       </select>
     </div>
+
     <div class="cards" id="cards"></div>
   </section>
+
 </main>
 
 <footer>
-  <div class="wrap">SchoolPadel 🎾 · Aprende, practica y mejora.</div>
+  <div class="wrap">
+    SchoolPadel 🎾 · Aprende, practica y mejora.
+  </div>
 </footer>
 
 <script>
 const catalog = {
-"Derecha": [
-"r-57bMCgpJA","eftldfpVHsU","nLErmB974pk","ANBD6Nq_y_c","L35UArPRJM0",
-"Y-1027l_F9Y","Ryxrw383CgM","G43t2c66l7g","vQv35dEW7XA"
-],
-"Revés": [
-"5Hxll8izMxM","3_QC_DLNJR4","ZlightJDK4M","5A7kbmfSAiU",
-"3WKIEsIHdiM&t=44s","eZV3fqwfdP4","pMsVonOXTPg","O9c8Y7p0zZY",
-"j8ZcTn1-yso","9x5t8LtWh0o"
-],
-"Volea de derecha": [
-"wIPYs-cCWg8","tkv2TNnYQR8","5y2C1k8KVo8","70_w2bkcu9Q",
-"kCoeezg4RnQ","L6ah9U2I7ZA","ULXK7ht1J30","Z-Wes4Yn2Do",
-"NtO0x7pARFI","2wr39_FvL9M"
-],
-"Volea de revés": [
-"jK4eE6Lx7TY","_6o7fNR8qkQ","I1s31OSqUpQ","xpBC-tdU_sw",
-"AY144cpP4Ts","hVvg_KVjkt8","F0kV-Nb_SUE","8FaaLJnl0fQ",
-"mFxx-Ou2OaY","4MTytXPIWAI"
-],
-"Bandeja": [
-"YRFyz6fDRMY","OWgxm7Ob65g","CXBmVdxBmtE","tIf6CvvNuLA",
-"5c52jcX5HQU","FqQ_U3ExJdw"
-],
-"Víbora": [
-"2-rYwphSGH4","fHaPpWIAJG4","-01iBOkcxbg","K0yEMWhdn3M"
-],
-"Remate": [
-"mU33cxiGob8","-05fRUxJ69w","50u1GprpMU0","NUVvRnuZqnU",
-"f0CSe-yOd-4","BQeLqSvRJck","gQNP27oth1U"
-],
-"Globo": [
-"WRPNuaWP02k","Zr-mwlqbTNs","IpBRDQethHg","1HuSrKwYy0A",
-"sVq5220xerY","idAQcNgxqI0"
-],
-"Salida de pared": [
-"TGLUy-EYV90","JUNQPpKU9JM","nQIX_nV5Hdw","IbPknawI0bQ","pDu52K49pGw"
-],
-"Doble pared": [
-"EcODH6Y2i4o","9DyLUmiPp1k","VCqcaGaXeVw","yX8xuu20Kck",
-"yNHKpFBhuKc","FUbeEYkh4jc","3cDdxfagvO0","D21X3s4Xjno"
-],
-"Saque": [
-"ZvCFtO0kYJI","Jei5pbhPo90","0eAoh-WnTpA","mPMrhKGXc-k",
-"BFA-WLMdLUs","HLXx0cl6yTk","VgtX_k7PG6w","kjs5yNHpLqU"
-],
-"Resto": [
-"twYCp07uKhs","WcHDvRwybFg","XoifYvLnPcE"
-],
-"Desplazamientos": [
-"Ouc7wS25DbA","ul3g3bsOldM","s8e42kLzYWA"
-],
-"Táctica": [
-"HH_c-E0b-9M","M7dO_QWl0RY","j52mEu3aeUI",
-"b9-7jeov4SY&t=121s","P5vv6Y5MA88","AhVs7cAW9OI",
-"_O9Pg2ughw4","JkUk4rK5pUs"
-],
-"Chiquita": [
-"vGK7qdbiQUM","Ma4N8A-E5qk","tcYoGAdqqnA"
-],
-"Dejada": [
-"erHD6NdfSho","T3HSRb84lCU","Llz1GbTWPEs","2tm56C1wpgE",
-"RRDk0sJQzC8","6EtqBwHLQZc","9H-YWi8hHXI&t=76s"
-],
-"Bajada de pared": [
-"VJaufmkRmyQ","oUwqxvPbXVc","Heah8_flLL8","Uhc4MY0eZEg","Ymum9uZqWVA"
-]
+  "Derecha": [
+    "r-57bMCgpJA","eftldfpVHsU","nLErmB974pk",
+    "ANBD6Nq_y_c","L35UArPRJM0","Y-1027l_F9Y",
+    "Ryxrw383CgM","G43t2c66l7g","vQv35dEW7XA"
+  ],
+
+  "Revés": [
+    "5Hxll8izMxM","3_QC_DLNJR4","ZlightJDK4M",
+    "5A7kbmfSAiU","3WKIEsIHdiM&t=44s","eZV3fqwfdP4",
+    "pMsVonOXTPg","O9c8Y7p0zZY","j8ZcTn1-yso",
+    "9x5t8LtWh0o"
+  ],
+
+  "Volea de derecha": [
+    "wIPYs-cCWg8","tkv2TNnYQR8","5y2C1k8KVo8",
+    "70_w2bkcu9Q","kCoeezg4RnQ","L6ah9U2I7ZA",
+    "ULXK7ht1J30","Z-Wes4Yn2Do","NtO0x7pARFI",
+    "2wr39_FvL9M"
+  ],
+
+  "Volea de revés": [
+    "jK4eE6Lx7TY","_6o7fNR8qkQ","I1s31OSqUpQ",
+    "xpBC-tdU_sw","AY144cpP4Ts","hVvg_KVjkt8",
+    "F0kV-Nb_SUE","8FaaLJnl0fQ","mFxx-Ou2OaY",
+    "4MTytXPIWAI"
+  ],
+
+  "Bandeja": [
+    "YRFyz6fDRMY","OWgxm7Ob65g","CXBmVdxBmtE",
+    "tIf6CvvNuLA","5c52jcX5HQU","FqQ_U3ExJdw"
+  ],
+
+  "Víbora": [
+    "2-rYwphSGH4","fHaPpWIAJG4",
+    "-01iBOkcxbg","K0yEMWhdn3M"
+  ],
+
+  "Remate": [
+    "mU33cxiGob8","-05fRUxJ69w","50u1GprpMU0",
+    "NUVvRnuZqnU","f0CSe-yOd-4","BQeLqSvRJck",
+    "gQNP27oth1U"
+  ],
+
+  "Globo": [
+    "WRPNuaWP02k","Zr-mwlqbTNs","IpBRDQethHg",
+    "1HuSrKwYy0A","sVq5220xerY","idAQcNgxqI0"
+  ],
+
+  "Salida de pared": [
+    "TGLUy-EYV90","JUNQPpKU9JM","nQIX_nV5Hdw",
+    "IbPknawI0bQ","pDu52K49pGw"
+  ],
+
+  "Doble pared": [
+    "EcODH6Y2i4o","9DyLUmiPp1k","VCqcaGaXeVw",
+    "yX8xuu20Kck","yNHKpFBhuKc","FUbeEYkh4jc",
+    "3cDdxfagvO0","D21X3s4Xjno"
+  ],
+
+  "Saque": [
+    "ZvCFtO0kYJI","Jei5pbhPo90","0eAoh-WnTpA",
+    "mPMrhKGXc-k","BFA-WLMdLUs","HLXx0cl6yTk",
+    "VgtX_k7PG6w","kjs5yNHpLqU"
+  ],
+
+  "Resto": [
+    "twYCp07uKhs","WcHDvRwybFg","XoifYvLnPcE"
+  ],
+
+  "Desplazamientos": [
+    "Ouc7wS25DbA","ul3g3bsOldM","s8e42kLzYWA"
+  ],
+
+  "Táctica": [
+    "HH_c-E0b-9M","M7dO_QWl0RY","j52mEu3aeUI",
+    "b9-7jeov4SY&t=121s","P5vv6Y5MA88",
+    "AhVs7cAW9OI","_O9Pg2ughw4","JkUk4rK5pUs"
+  ],
+
+  "Chiquita": [
+    "vGK7qdbiQUM","Ma4N8A-E5qk","tcYoGAdqqnA"
+  ],
+
+  "Dejada": [
+    "erHD6NdfSho","T3HSRb84lCU","Llz1GbTWPEs",
+    "2tm56C1wpgE","RRDk0sJQzC8","6EtqBwHLQZc",
+    "9H-YWi8hHXI&t=76s"
+  ],
+
+  "Bajada de pared": [
+    "VJaufmkRmyQ","oUwqxvPbXVc","Heah8_flLL8",
+    "Uhc4MY0eZEg","Ymum9uZqWVA"
+  ]
 };
 
 const categories = Object.keys(catalog);
+
 const videos = categories.flatMap(category =>
-  catalog[category].map((value,index) => {
+  catalog[category].map((value, index) => {
     const parts = value.split("&");
     const id = parts[0];
-    const suffix = parts.length > 1 ? "&" + parts.slice(1).join("&") : "";
+    const suffix = parts.length > 1
+      ? "&" + parts.slice(1).join("&")
+      : "";
+
+    // Conserva el segundo de inicio de los enlaces que lo indican.
+    const timeMatch = suffix.match(/t=(\d+)s?/);
+    const start = timeMatch ? Number(timeMatch[1]) : 0;
+
     return {
       category,
-      number:index+1,
+      number: index + 1,
       id,
-      url:"https://www.youtube.com/watch?v="+id+suffix,
-      title:category+" · Tutorial "+(index+1)
+      start,
+      url: "https://www.youtube.com/watch?v=" + id + suffix,
+      title: category + " · Tutorial " + (index + 1)
     };
   })
 );
 
 let selected = "Todas";
+
 const categoryBox = document.getElementById("categories");
 const cardsBox = document.getElementById("cards");
 const search = document.getElementById("search");
@@ -212,93 +544,169 @@ const sort = document.getElementById("sort");
 
 function renderCategories() {
   categoryBox.innerHTML = "";
+
   const options = ["Todas", ...categories];
+
   options.forEach(name => {
-    const count = name === "Todas" ? videos.length : catalog[name].length;
+    const count = name === "Todas"
+      ? videos.length
+      : catalog[name].length;
+
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "cat" + (selected === name ? " active" : "");
-    button.innerHTML = `<strong>${name}</strong><small>${count} video${count===1?"":"s"}</small>`;
+    button.className =
+      "cat" + (selected === name ? " active" : "");
+
+    const strong = document.createElement("strong");
+    strong.textContent = name;
+
+    const small = document.createElement("small");
+    small.textContent =
+      count + " video" + (count === 1 ? "" : "s");
+
+    button.append(strong, small);
+
     button.addEventListener("click", () => {
       selected = name;
+
       document.getElementById("title").textContent =
         name === "Todas" ? "Todos los videos" : name;
+
       renderCategories();
       renderCards();
-      document.getElementById("videos").scrollIntoView({behavior:"smooth"});
+
+      document.getElementById("videos").scrollIntoView({
+        behavior: "smooth"
+      });
     });
+
     categoryBox.appendChild(button);
   });
 }
 
+function createPlayer(video) {
+  const player = document.createElement("div");
+  player.className = "player";
+
+  const iframe = document.createElement("iframe");
+
+  let embedUrl =
+    "https://www.youtube.com/embed/" +
+    encodeURIComponent(video.id) +
+    "?autoplay=1&rel=0";
+
+  if (video.start > 0) {
+    embedUrl += "&start=" + video.start;
+  }
+
+  iframe.src = embedUrl;
+  iframe.title = video.title;
+  iframe.loading = "lazy";
+  iframe.allow =
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+  iframe.allowFullscreen = true;
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+
+  player.appendChild(iframe);
+
+  return player;
+}
+
 function renderCards() {
   const query = search.value.trim().toLocaleLowerCase("es");
-  let list = videos.filter(v =>
-    (selected === "Todas" || v.category === selected) &&
-    (v.category + " " + v.title + " " + v.id).toLocaleLowerCase("es").includes(query)
+
+  let list = videos.filter(video =>
+    (selected === "Todas" || video.category === selected) &&
+    (
+      video.category + " " +
+      video.title + " " +
+      video.id
+    ).toLocaleLowerCase("es").includes(query)
   );
 
   if (sort.value === "az") {
-    list.sort((a,b) => a.category.localeCompare(b.category,"es") || a.number-b.number);
+    list.sort((a, b) =>
+      a.category.localeCompare(b.category, "es") ||
+      a.number - b.number
+    );
   }
 
   cardsBox.innerHTML = "";
+
   if (!list.length) {
-    cardsBox.innerHTML = '<div class="empty">No encontramos videos. Probá otra búsqueda.</div>';
+    cardsBox.innerHTML =
+      '<div class="empty">No encontramos videos. Probá otra búsqueda.</div>';
     return;
   }
 
-  list.forEach(v => {
+  list.forEach(video => {
     const card = document.createElement("article");
     card.className = "card";
 
-    const link = document.createElement("a");
-    link.className = "thumb";
-    link.href = v.url;
-    link.target = "_blank";
-    link.rel = "noopener";
-    link.setAttribute("aria-label","Abrir video en YouTube");
+    // Miniatura: al tocarla, aparece el reproductor dentro de la tarjeta.
+    const thumb = document.createElement("button");
+    thumb.type = "button";
+    thumb.className = "thumb";
+    thumb.setAttribute(
+      "aria-label",
+      "Reproducir " + video.title + " dentro de SchoolPadel"
+    );
 
     const img = document.createElement("img");
     img.loading = "lazy";
-    img.src = "https://i.ytimg.com/vi/" + v.id + "/hqdefault.jpg";
-    img.alt = "Miniatura de " + v.title;
+    img.src =
+      "https://i.ytimg.com/vi/" +
+      video.id +
+      "/hqdefault.jpg";
+    img.alt = "Miniatura de " + video.title;
+
     img.onerror = () => {
       img.style.display = "none";
-      link.style.background = "#203b2a";
+      thumb.style.background = "#203b2a";
     };
-    link.appendChild(img);
+
+    thumb.appendChild(img);
+
+    thumb.addEventListener("click", () => {
+      const player = createPlayer(video);
+      thumb.replaceWith(player);
+    }, { once: true });
 
     const body = document.createElement("div");
     body.className = "card-body";
 
     const tag = document.createElement("span");
     tag.className = "tag";
-    tag.textContent = v.category;
+    tag.textContent = video.category;
 
     const h3 = document.createElement("h3");
-    h3.textContent = v.title;
+    h3.textContent = video.title;
 
     const p = document.createElement("p");
-    p.textContent = "Enlace de YouTube · Título pendiente de confirmar";
+    p.textContent =
+      "Tutorial de pádel · " + video.category;
 
+    // Este enlace sigue disponible por si el video no permite
+    // reproducción incrustada o el usuario prefiere YouTube.
     const watch = document.createElement("a");
     watch.className = "watch";
-    watch.href = v.url;
+    watch.href = video.url;
     watch.target = "_blank";
-    watch.rel = "noopener";
-    watch.textContent = "Ver en YouTube ↗";
+    watch.rel = "noopener noreferrer";
+    watch.textContent = "Abrir en YouTube ↗";
 
-    body.append(tag,h3,p,watch);
-    card.append(link,body);
+    body.append(tag, h3, p, watch);
+    card.append(thumb, body);
     cardsBox.appendChild(card);
   });
 }
 
-search.addEventListener("input",renderCards);
-sort.addEventListener("change",renderCards);
+search.addEventListener("input", renderCards);
+sort.addEventListener("change", renderCards);
+
 renderCategories();
 renderCards();
 </script>
+
 </body>
 </html>
