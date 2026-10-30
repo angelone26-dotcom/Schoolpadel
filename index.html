@@ -107,6 +107,13 @@ h3 { font-size:1.05rem; margin:8px 0 }
 .club .links { margin-top:auto; padding-top:10px; display:flex; gap:14px; flex-wrap:wrap }
 .club .links a { color:var(--green); text-decoration:none; font-weight:800; font-size:.88rem }
 .club .links a:hover { text-decoration:underline }
+.club .links button { background:none; border:0; padding:0; font:inherit; color:var(--green); font-weight:800; font-size:.88rem; cursor:pointer }
+.club .links button:hover { text-decoration:underline }
+.club-body h4 { margin:18px 0 8px; font-size:1rem }
+.club-body p { color:var(--muted); margin:0 0 6px; font-size:.9rem }
+.club-teacher { border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:8px }
+.club-teacher strong { display:block }
+.club-teacher a { color:var(--green); font-weight:800; font-size:.88rem; text-decoration:none }
 .note { color:var(--muted); font-size:.82rem; margin-top:14px }
 .empty { padding:25px; border:1px dashed var(--line); border-radius:12px; color:var(--muted) }
 footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--muted); font-size:.85rem; margin-top:35px }
@@ -149,7 +156,7 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
 <body>
 <header class="wrap">
   <a class="logo" href="#">School<span>Padel</span> 🎾</a>
-  <nav><a href="#problemas">Problemas</a><a href="#golpes">Golpes</a><a href="#videos">Videos</a><a href="#canchas">Canchas</a><a href="#profes">Profes</a></nav>
+  <nav><a href="#problemas">Problemas</a><a href="#golpes">Golpes</a><a href="#videos">Videos</a><a href="#canchas">Canchas</a></nav>
 </header>
 
 <main class="wrap">
@@ -186,7 +193,7 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
       <p id="subtitle">Elegí un tutorial para verlo acá mismo.</p>
     </div>
     <div class="search">
-      <input id="search" type="search" placeholder="Buscar golpe o categoría..." aria-label="Buscar videos">
+      <input id="search" type="search" placeholder="Buscá un golpe o un problema (ej. bandeja, saque, defender)" aria-label="Buscar videos">
       <select id="sort" aria-label="Ordenar videos">
         <option value="default">Orden original</option>
         <option value="az">Categoría A-Z</option>
@@ -195,18 +202,10 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
     <div class="cards" id="cards"></div>
   </section>
 
-  <section id="profes">
-    <div class="heading">
-      <h2>Encontrá tu profesor</h2>
-      <p>Profesores y academias vinculados a clubes de Montevideo. La disponibilidad y los horarios se consultan directamente con cada club o profesor.</p>
-    </div>
-    <div class="clubs" id="teachers"></div>
-  </section>
-
   <section id="canchas">
     <div class="heading">
       <h2>Dónde jugar en Montevideo</h2>
-      <p>Clubes de pádel para llevar lo aprendido a la cancha.</p>
+      <p>Clubes de pádel para llevar lo aprendido a la cancha. Entrá a cada club para ver quién da clases.</p>
     </div>
     <div class="clubs" id="clubs"></div>
     <p class="note">Información orientativa. Los horarios, teléfonos y servicios pueden cambiar; confirmalos directamente con cada club antes de ir. Esta lista no es completa.</p>
@@ -241,6 +240,24 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
         <button type="button" id="prev">← Anterior</button>
         <button type="button" id="next">Siguiente →</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="club-modal" hidden role="dialog" aria-modal="true" aria-label="Detalle del club">
+  <div class="modal-box">
+    <div class="modal-top">
+      <div>
+        <h3 id="club-title"></h3>
+        <small id="club-sub"></small>
+      </div>
+      <button type="button" class="close" id="club-close">Cerrar ✕</button>
+    </div>
+    <div class="club-body">
+      <h4>Profesores que dan clases acá</h4>
+      <div id="club-teachers"></div>
+      <h4>Opiniones de alumnos</h4>
+      <p id="club-reviews"></p>
     </div>
   </div>
 </div>
@@ -429,42 +446,49 @@ const PROBLEMS = [
   {icon:"📍", text:"No sé dónde pararme", cats:["Táctica"]},
   {icon:"🏃", text:"Llego tarde a las pelotas", cats:["Desplazamientos"]}
 ];
-
-// Sinónimos y formas habituales de buscar cada golpe.
-// Esto permite encontrar tutoriales aunque el jugador no conozca el nombre técnico.
+// Formas habituales de buscar cada golpe (para encontrar tutoriales sin saber el nombre técnico).
 const CATEGORY_TERMS = {
   "Derecha":"drive golpe de derecha derecha de fondo forehand",
-  "Revés":"reves golpe de reves backhand revés de fondo",
+  "Revés":"reves golpe de reves backhand reves de fondo",
   "Volea de derecha":"volea derecha volea de drive volear en la red",
   "Volea de revés":"volea reves volea de reves volear en la red",
   "Bandeja":"bandeja pelota alta globo ataque desde arriba",
-  "Víbora":"vibora víbora golpe cortado pelota alta",
-  "Remate":"smash smash por tres remate traerla sacarla por cuatro",
-  "Globo":"globos pelota alta lob defensa",
+  "Víbora":"vibora golpe cortado pelota alta",
+  "Remate":"smash smash por tres remate por cuatro sacarla",
+  "Globo":"globos pelota alta lob defensa defender",
   "Salida de pared":"pared rebote salida de pared defender pared",
   "Doble pared":"doble pared rebote dos paredes pared lateral",
   "Saque":"servicio saque iniciar punto",
-  "Resto":"resto devolver saque recepción",
+  "Resto":"resto devolver saque recepcion",
   "Desplazamientos":"movimiento pies piernas llegar tarde posicionamiento desplazamiento",
-  "Táctica":"tactica estrategia posicion posicionamiento jugar en pareja",
-  "Chiquita":"chiquita bola baja defensa transición",
+  "Táctica":"tactica estrategia posicion jugar en pareja",
+  "Chiquita":"chiquita bola baja defensa defender transicion",
   "Dejada":"dejada drop bola corta toque",
-  "Bajada de pared":"bajada pared rebote ataque después de pared"
+  "Bajada de pared":"bajada pared rebote ataque defender despues de pared"
 };
 
 function normalizeText(value) {
-  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
+  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("es");
 }
 
-function searchableVideoText(v) {
-  const relatedProblems = PROBLEMS
-    .filter(p => p.cats.includes(v.category))
-    .map(p => p.text)
-    .join(" ");
-  return normalizeText([
-    v.category, v.title, v.channel, CATEGORY_TERMS[v.category], relatedProblems
-  ].join(" "));
+// 0 = no coincide. Más alto = más relevante (nombre del golpe > título > sinónimos).
+function scoreVideo(v,terms) {
+  if (!terms.length) return 1;
+  const cat = normalizeText(v.category);
+  const own = normalizeText(v.title + " " + v.channel);
+  const extra = normalizeText(CATEGORY_TERMS[v.category]);
+  let total = 0;
+  for (const term of terms) {
+    let s = 0;
+    if (cat.includes(term)) s = 3;
+    else if (own.includes(term)) s = 2;
+    else if (extra.includes(term)) s = 1;
+    if (!s) return 0;
+    total += s;
+  }
+  return total;
 }
+
 const categoryBox = document.getElementById("categories");
 const cardsBox = document.getElementById("cards");
 const search = document.getElementById("search");
@@ -601,37 +625,40 @@ document.getElementById("close").addEventListener("click",closeVideo);
 modal.addEventListener("click",e => { if (e.target === modal) closeVideo(); });
 prevBtn.addEventListener("click",() => { if (currentIndex > 0) openVideo(currentList,currentIndex-1); });
 nextBtn.addEventListener("click",() => { if (currentIndex < currentList.length-1) openVideo(currentList,currentIndex+1); });
+function trapTab(e,box) {
+  if (e.key !== "Tab") return;
+  const items = [...box.querySelectorAll("button:not(:disabled),a[href]")];
+  if (!items.length) return;
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
 document.addEventListener("keydown",e => {
+  if (!clubModal.hidden) {
+    if (e.key === "Escape") closeClub();
+    trapTab(e,clubModal);
+    return;
+  }
   if (modal.hidden) return;
   if (e.key === "Escape") closeVideo();
   if (e.key === "ArrowLeft" && !prevBtn.disabled) prevBtn.click();
   if (e.key === "ArrowRight" && !nextBtn.disabled) nextBtn.click();
-  // Mantiene el foco dentro del reproductor mientras está abierto.
-  if (e.key === "Tab") {
-    const focusable = [...modal.querySelectorAll('button:not(:disabled),a[href]')];
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault(); last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault(); first.focus();
-    }
-  }
+  trapTab(e,modal);
 });
 
 function renderCards() {
   const query = normalizeText(search.value.trim());
   const terms = query.split(/\s+/).filter(Boolean);
   const problem = selectedProblem === null ? null : PROBLEMS[selectedProblem];
-  let list = videos.filter(v => {
-    const inSelection = problem
-      ? problem.cats.includes(v.category)
-      : (selected === "Todas" || v.category === selected);
-    const searchable = searchableVideoText(v);
-    const matchesSearch = terms.every(term => searchable.includes(term));
-    return inSelection && matchesSearch;
-  });
+  let list = videos.filter(v =>
+    (problem ? problem.cats.includes(v.category) : (selected === "Todas" || v.category === selected)) &&
+    scoreVideo(v,terms) > 0
+  );
+  if (terms.length && !problem && sort.value !== "az") {
+    const sc = new Map(list.map(v => [v,scoreVideo(v,terms)]));
+    list.sort((a,b) => sc.get(b) - sc.get(a));
+  }
   let hidden = 0;
   if (problem) {
     list.sort((a,b) => problem.cats.indexOf(a.category) - problem.cats.indexOf(b.category) || a.number - b.number);
@@ -765,7 +792,11 @@ function renderClubs() {
     const tel = document.createElement("a");
     tel.href = "tel:" + c.phone.replace(/[^\d+]/g,"");
     tel.textContent = "Llamar";
-    links.append(map,tel);
+    const profes = document.createElement("button");
+    profes.type = "button";
+    profes.textContent = "Profes y opiniones";
+    profes.addEventListener("click",() => openClub(c));
+    links.append(profes,map,tel);
     if (c.web) {
       const web = document.createElement("a");
       web.href = c.web;
@@ -780,6 +811,58 @@ function renderClubs() {
 }
 renderClubs();
 
+// Profesores por club (clave = nombre del club). Se cargan solo con datos confirmados por el club o por el profe.
+// Formato: {name:"Nombre", note:"Qué enseña / horarios", contact:"https://..."}
+const TEACHERS = {};
+const clubModal = document.getElementById("club-modal");
+let clubFocus = null;
+
+function openClub(c) {
+  document.getElementById("club-title").textContent = c.name;
+  document.getElementById("club-sub").textContent = c.address;
+  const box = document.getElementById("club-teachers");
+  box.innerHTML = "";
+  const list = TEACHERS[c.name] || [];
+  if (!list.length) {
+    const p = document.createElement("p");
+    p.textContent = "Todavía no cargamos profesores de este club. Estamos armando esta sección.";
+    box.appendChild(p);
+  } else {
+    list.forEach(tc => {
+      const card = document.createElement("div");
+      card.className = "club-teacher";
+      const name = document.createElement("strong");
+      name.textContent = tc.name;
+      const note = document.createElement("p");
+      note.textContent = tc.note || "";
+      card.append(name,note);
+      if (tc.contact && /^https:\/\//.test(tc.contact)) {
+        const a = document.createElement("a");
+        a.href = tc.contact;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = "Consultar información";
+        card.appendChild(a);
+      }
+      box.appendChild(card);
+    });
+  }
+  document.getElementById("club-reviews").textContent = "Las opiniones de los alumnos van a estar disponibles próximamente.";
+  clubFocus = document.activeElement;
+  clubModal.hidden = false;
+  document.body.style.overflow = "hidden";
+  document.getElementById("club-close").focus();
+}
+
+function closeClub() {
+  clubModal.hidden = true;
+  document.body.style.overflow = "";
+  if (clubFocus && clubFocus.focus) clubFocus.focus();
+}
+
+document.getElementById("club-close").addEventListener("click",closeClub);
+clubModal.addEventListener("click",e => { if (e.target === clubModal) closeClub(); });
+
 /* Opcional: si existe videos.json (lo genera verificar_videos.py), usa los títulos y canales reales */
 fetch("videos.json",{cache:"no-cache"})
   .then(r => r.ok ? r.json() : null)
@@ -792,13 +875,10 @@ fetch("videos.json",{cache:"no-cache"})
       if (x && x.titulo) { v.title = x.titulo; v.channel = x.canal || ""; }
     });
     renderCards();
-    // Si el usuario ya abrió un video, actualiza también el título del reproductor.
-    if (!modal.hidden && currentList[currentIndex]) {
-      const current = currentList[currentIndex];
-      modalTitle.textContent = current.title;
-      modalSub.textContent = current.channel
-        ? current.category + " · " + current.channel
-        : current.category;
+    const cur = currentList[currentIndex];
+    if (!modal.hidden && cur) {
+      modalTitle.textContent = cur.title;
+      modalSub.textContent = cur.channel ? cur.category + " · " + cur.channel : cur.category;
     }
   })
   .catch(() => {});
@@ -808,26 +888,6 @@ sort.addEventListener("change",renderCards);
 renderCategories();
 renderProblems();
 renderCards();
-
-const TEACHERS = [
-  {name:"John López", club:"After Padel", note:"Profesor de pádel. Actualmente vinculado a After Padel.", contact:"https://padelmesh.com/es/uy/montevideo/clubs/after-padel"},
-  {name:"Diego Zapata", club:"TOP Padel Fit Center · Pro Pádel Academy", note:"Coach de pádel. La academia publica su perfil y trayectoria en su web oficial.", contact:"https://toppadelfitcenter.com/pro-academy/"}
-];
-function renderTeachers() {
-  const box = document.getElementById("teachers");
-  box.innerHTML = "";
-  TEACHERS.forEach(t => {
-    const card = document.createElement("article");
-    card.className = "club";
-    const h3 = document.createElement("h3"); h3.textContent = t.name;
-    const club = document.createElement("p"); club.innerHTML = "<strong>Club:</strong> "; club.append(document.createTextNode(t.club));
-    const note = document.createElement("p"); note.textContent = t.note;
-    const links = document.createElement("div"); links.className = "links";
-    const a = document.createElement("a"); a.href = t.contact; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Consultar información";
-    links.appendChild(a); card.append(h3,club,note,links); box.appendChild(card);
-  });
-}
-renderTeachers();
 
 function openFromHash() {
   const m = location.hash.match(/^#v=([A-Za-z0-9_-]{11})$/);
