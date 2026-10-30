@@ -149,7 +149,7 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
 <body>
 <header class="wrap">
   <a class="logo" href="#">School<span>Padel</span> 🎾</a>
-  <nav><a href="#problemas">Problemas</a><a href="#golpes">Golpes</a><a href="#videos">Videos</a><a href="#canchas">Canchas</a></nav>
+  <nav><a href="#problemas">Problemas</a><a href="#golpes">Golpes</a><a href="#videos">Videos</a><a href="#canchas">Canchas</a><a href="#profes">Profes</a></nav>
 </header>
 
 <main class="wrap">
@@ -195,13 +195,21 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
     <div class="cards" id="cards"></div>
   </section>
 
+  <section id="profes">
+    <div class="heading">
+      <h2>Encontrá tu profesor</h2>
+      <p>Profesores y academias vinculados a clubes de Montevideo. La disponibilidad y los horarios se consultan directamente con cada club o profesor.</p>
+    </div>
+    <div class="clubs" id="teachers"></div>
+  </section>
+
   <section id="canchas">
     <div class="heading">
       <h2>Dónde jugar en Montevideo</h2>
       <p>Clubes de pádel para llevar lo aprendido a la cancha.</p>
     </div>
     <div class="clubs" id="clubs"></div>
-    <p class="note">Datos tomados de Google Maps (octubre 2026). Confirmá horarios y precios directamente con cada club. No es una lista completa.</p>
+    <p class="note">Información orientativa. Los horarios, teléfonos y servicios pueden cambiar; confirmalos directamente con cada club antes de ir. Esta lista no es completa.</p>
   </section>
 </main>
 
@@ -421,6 +429,42 @@ const PROBLEMS = [
   {icon:"📍", text:"No sé dónde pararme", cats:["Táctica"]},
   {icon:"🏃", text:"Llego tarde a las pelotas", cats:["Desplazamientos"]}
 ];
+
+// Sinónimos y formas habituales de buscar cada golpe.
+// Esto permite encontrar tutoriales aunque el jugador no conozca el nombre técnico.
+const CATEGORY_TERMS = {
+  "Derecha":"drive golpe de derecha derecha de fondo forehand",
+  "Revés":"reves golpe de reves backhand revés de fondo",
+  "Volea de derecha":"volea derecha volea de drive volear en la red",
+  "Volea de revés":"volea reves volea de reves volear en la red",
+  "Bandeja":"bandeja pelota alta globo ataque desde arriba",
+  "Víbora":"vibora víbora golpe cortado pelota alta",
+  "Remate":"smash smash por tres remate traerla sacarla por cuatro",
+  "Globo":"globos pelota alta lob defensa",
+  "Salida de pared":"pared rebote salida de pared defender pared",
+  "Doble pared":"doble pared rebote dos paredes pared lateral",
+  "Saque":"servicio saque iniciar punto",
+  "Resto":"resto devolver saque recepción",
+  "Desplazamientos":"movimiento pies piernas llegar tarde posicionamiento desplazamiento",
+  "Táctica":"tactica estrategia posicion posicionamiento jugar en pareja",
+  "Chiquita":"chiquita bola baja defensa transición",
+  "Dejada":"dejada drop bola corta toque",
+  "Bajada de pared":"bajada pared rebote ataque después de pared"
+};
+
+function normalizeText(value) {
+  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
+}
+
+function searchableVideoText(v) {
+  const relatedProblems = PROBLEMS
+    .filter(p => p.cats.includes(v.category))
+    .map(p => p.text)
+    .join(" ");
+  return normalizeText([
+    v.category, v.title, v.channel, CATEGORY_TERMS[v.category], relatedProblems
+  ].join(" "));
+}
 const categoryBox = document.getElementById("categories");
 const cardsBox = document.getElementById("cards");
 const search = document.getElementById("search");
@@ -560,17 +604,34 @@ nextBtn.addEventListener("click",() => { if (currentIndex < currentList.length-1
 document.addEventListener("keydown",e => {
   if (modal.hidden) return;
   if (e.key === "Escape") closeVideo();
-  if (e.key === "ArrowLeft") prevBtn.click();
-  if (e.key === "ArrowRight") nextBtn.click();
+  if (e.key === "ArrowLeft" && !prevBtn.disabled) prevBtn.click();
+  if (e.key === "ArrowRight" && !nextBtn.disabled) nextBtn.click();
+  // Mantiene el foco dentro del reproductor mientras está abierto.
+  if (e.key === "Tab") {
+    const focusable = [...modal.querySelectorAll('button:not(:disabled),a[href]')];
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  }
 });
 
 function renderCards() {
-  const query = search.value.trim().toLocaleLowerCase("es");
+  const query = normalizeText(search.value.trim());
+  const terms = query.split(/\s+/).filter(Boolean);
   const problem = selectedProblem === null ? null : PROBLEMS[selectedProblem];
-  let list = videos.filter(v =>
-    (problem ? problem.cats.includes(v.category) : (selected === "Todas" || v.category === selected)) &&
-    (v.category + " " + v.title + " " + v.channel).toLocaleLowerCase("es").includes(query)
-  );
+  let list = videos.filter(v => {
+    const inSelection = problem
+      ? problem.cats.includes(v.category)
+      : (selected === "Todas" || v.category === selected);
+    const searchable = searchableVideoText(v);
+    const matchesSearch = terms.every(term => searchable.includes(term));
+    return inSelection && matchesSearch;
+  });
   let hidden = 0;
   if (problem) {
     list.sort((a,b) => problem.cats.indexOf(a.category) - problem.cats.indexOf(b.category) || a.number - b.number);
@@ -731,6 +792,14 @@ fetch("videos.json",{cache:"no-cache"})
       if (x && x.titulo) { v.title = x.titulo; v.channel = x.canal || ""; }
     });
     renderCards();
+    // Si el usuario ya abrió un video, actualiza también el título del reproductor.
+    if (!modal.hidden && currentList[currentIndex]) {
+      const current = currentList[currentIndex];
+      modalTitle.textContent = current.title;
+      modalSub.textContent = current.channel
+        ? current.category + " · " + current.channel
+        : current.category;
+    }
   })
   .catch(() => {});
 
@@ -739,6 +808,26 @@ sort.addEventListener("change",renderCards);
 renderCategories();
 renderProblems();
 renderCards();
+
+const TEACHERS = [
+  {name:"John López", club:"After Padel", note:"Profesor de pádel. Actualmente vinculado a After Padel.", contact:"https://padelmesh.com/es/uy/montevideo/clubs/after-padel"},
+  {name:"Diego Zapata", club:"TOP Padel Fit Center · Pro Pádel Academy", note:"Coach de pádel. La academia publica su perfil y trayectoria en su web oficial.", contact:"https://toppadelfitcenter.com/pro-academy/"}
+];
+function renderTeachers() {
+  const box = document.getElementById("teachers");
+  box.innerHTML = "";
+  TEACHERS.forEach(t => {
+    const card = document.createElement("article");
+    card.className = "club";
+    const h3 = document.createElement("h3"); h3.textContent = t.name;
+    const club = document.createElement("p"); club.innerHTML = "<strong>Club:</strong> "; club.append(document.createTextNode(t.club));
+    const note = document.createElement("p"); note.textContent = t.note;
+    const links = document.createElement("div"); links.className = "links";
+    const a = document.createElement("a"); a.href = t.contact; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Consultar información";
+    links.appendChild(a); card.append(h3,club,note,links); box.appendChild(card);
+  });
+}
+renderTeachers();
 
 function openFromHash() {
   const m = location.hash.match(/^#v=([A-Za-z0-9_-]{11})$/);
