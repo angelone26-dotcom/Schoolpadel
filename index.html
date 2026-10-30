@@ -98,6 +98,16 @@ h3 { font-size:1.05rem; margin:8px 0 }
 .watch:hover { text-decoration:underline }
 .alt { color:var(--muted); font-size:.8rem; text-decoration:none }
 .alt:hover { color:var(--green) }
+.clubs { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:15px }
+.club { border:1px solid var(--line); border-radius:16px; background:var(--panel); padding:16px; display:flex; flex-direction:column; gap:6px }
+.club h3 { margin:0 }
+.club .rating { color:var(--green); font-weight:800; font-size:.9rem }
+.club .rating small { color:var(--muted); font-weight:400 }
+.club p { margin:0; color:var(--muted); font-size:.88rem }
+.club .links { margin-top:auto; padding-top:10px; display:flex; gap:14px; flex-wrap:wrap }
+.club .links a { color:var(--green); text-decoration:none; font-weight:800; font-size:.88rem }
+.club .links a:hover { text-decoration:underline }
+.note { color:var(--muted); font-size:.82rem; margin-top:14px }
 .empty { padding:25px; border:1px dashed var(--line); border-radius:12px; color:var(--muted) }
 footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--muted); font-size:.85rem; margin-top:35px }
 
@@ -139,7 +149,7 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
 <body>
 <header class="wrap">
   <a class="logo" href="#">School<span>Padel</span> 🎾</a>
-  <nav><a href="#problemas">Problemas</a><a href="#golpes">Golpes</a><a href="#videos">Videos</a></nav>
+  <nav><a href="#problemas">Problemas</a><a href="#golpes">Golpes</a><a href="#videos">Videos</a><a href="#canchas">Canchas</a></nav>
 </header>
 
 <main class="wrap">
@@ -183,6 +193,15 @@ footer { border-top:1px solid var(--line); padding:25px 0 35px; color:var(--mute
       </select>
     </div>
     <div class="cards" id="cards"></div>
+  </section>
+
+  <section id="canchas">
+    <div class="heading">
+      <h2>Dónde jugar en Montevideo</h2>
+      <p>Clubes de pádel para llevar lo aprendido a la cancha.</p>
+    </div>
+    <div class="clubs" id="clubs"></div>
+    <p class="note">Datos tomados de Google Maps (octubre 2026). Confirmá horarios y precios directamente con cada club. No es una lista completa.</p>
   </section>
 </main>
 
@@ -643,6 +662,62 @@ function renderCards() {
     cardsBox.appendChild(more);
   }
 }
+
+const CLUBS = [
+  {name:"Indoor Padel Mvd", address:"Dr. Andrés Crovetto 4980, Montevideo", phone:"+598 97 966 060", rating:4.8, count:200, hours:"Todos los días, 9:00 a 23:00"},
+  {name:"Match Carrasco", address:"Dr. Celedonio Nin y Silva 2334, Montevideo", phone:"+598 92 720 025", rating:4.7, count:110, hours:"Todos los días, 7:00 a 23:00", web:"https://www.match.com.uy/"},
+  {name:"TOP Padel Fit Center", address:"Velsen 4440, Montevideo", phone:"+598 98 500 222", rating:4.3, count:108, hours:"Abierto las 24 horas", web:"https://toppadelfitcenter.com/"},
+  {name:"Boss Padel Carrasco", address:"Av. de las Industrias 7201, Ciudad de la Costa (Canelones)", phone:"+598 97 406 148", rating:4.6, count:72, hours:"Todos los días, 8:00 a 24:00"},
+  {name:"Mvd Padel Park", address:"Comercio 2159, Montevideo", phone:"+598 98 271 663", rating:4.8, count:64, hours:"Todos los días, 8:00 a 23:30"},
+  {name:"Cordón Pádel Club", address:"Piedra Alta 1772, Montevideo", phone:"+598 99 089 918", rating:4.8, count:56, hours:"Todos los días, 7:00 a 23:30"},
+  {name:"World Padel Center Montevideo", address:"Estado de Israel 2800, Montevideo", phone:"+598 92 382 074", rating:4.7, count:41, hours:"Todos los días, 8:00 a 23:30", web:"https://www.worldpadelcentermvd.uy/"},
+  {name:"Sale Padel", address:"Tomás Gomensoro 2915, Montevideo", phone:"+598 93 999 027", rating:4.9, count:40, hours:"Todos los días, 8:30 a 23:30", web:"http://www.salepadel.uy/"},
+  {name:"Charrua Padel", address:"Av. Bolivia 2390, Montevideo", phone:"+598 2601 8377", rating:4.5, count:77, hours:"Horario no informado", web:"http://www.complejocharrua.com/"},
+  {name:"After Padel", address:"Av. 18 de Diciembre 1433, Montevideo", phone:"+598 93 416 953", rating:4.9, count:17, hours:"Todos los días, 7:00 a 23:00"}
+];
+
+function renderClubs() {
+  const box = document.getElementById("clubs");
+  box.innerHTML = "";
+  CLUBS.forEach(c => {
+    const card = document.createElement("article");
+    card.className = "club";
+    const h3 = document.createElement("h3");
+    h3.textContent = c.name;
+    const rating = document.createElement("div");
+    rating.className = "rating";
+    rating.textContent = "★ " + String(c.rating).replace(".",",") + " ";
+    const small = document.createElement("small");
+    small.textContent = "(" + c.count + " reseñas en Google)";
+    rating.appendChild(small);
+    const addr = document.createElement("p");
+    addr.textContent = c.address;
+    const hrs = document.createElement("p");
+    hrs.textContent = c.hours;
+    const links = document.createElement("div");
+    links.className = "links";
+    const map = document.createElement("a");
+    map.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(c.name + " " + c.address);
+    map.target = "_blank";
+    map.rel = "noopener";
+    map.textContent = "Cómo llegar";
+    const tel = document.createElement("a");
+    tel.href = "tel:" + c.phone.replace(/[^\d+]/g,"");
+    tel.textContent = "Llamar";
+    links.append(map,tel);
+    if (c.web) {
+      const web = document.createElement("a");
+      web.href = c.web;
+      web.target = "_blank";
+      web.rel = "noopener";
+      web.textContent = "Sitio web";
+      links.appendChild(web);
+    }
+    card.append(h3,rating,addr,hrs,links);
+    box.appendChild(card);
+  });
+}
+renderClubs();
 
 /* Opcional: si existe videos.json (lo genera verificar_videos.py), usa los títulos y canales reales */
 fetch("videos.json",{cache:"no-cache"})
